@@ -36,10 +36,9 @@ public class FlowerService {
 
             return flowerRepository.save(flower);
         } else {
-            return null;
+            throw new IllegalArgumentException("Invalid category ID");
         }
     }
-
 
     public List<Flower> getAllFlowers() {
         return flowerRepository.findAll();
