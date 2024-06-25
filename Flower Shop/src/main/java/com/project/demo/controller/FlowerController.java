@@ -12,6 +12,12 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.hateoas.server.mvc.WebMvcLinkBuilder;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -30,7 +36,14 @@ public class FlowerController {
         this.flowerService = flowerService;
     }
 
-
+    @Operation(summary = "Add a new flower")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "201", description = "Flower added successfully",
+                    content = {@Content(mediaType = "application/json",
+                            schema = @Schema(implementation = Flower.class))}),
+            @ApiResponse(responseCode = "400", description = "Invalid input",
+                    content = @Content)
+    })
     @PostMapping
     @CircuitBreaker(name = "addFlowerCircuitBreaker", fallbackMethod = "addFlowerFallback")
     public ResponseEntity<EntityModel<Flower>> addFlower(@RequestBody FlowerRequestDTO flowerRequestDTO) {
@@ -55,6 +68,12 @@ public class FlowerController {
         return new ResponseEntity<>(errorModel, HttpStatus.SERVICE_UNAVAILABLE);
     }
 
+    @Operation(summary = "Get all flowers")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Successfully retrieved list",
+                    content = {@Content(mediaType = "application/json",
+                            schema = @Schema(implementation = Flower.class))})
+    })
     @GetMapping
     public ResponseEntity<CollectionModel<EntityModel<Flower>>> getAllFlowers() {
         List<Flower> flowers = this.flowerService.getAllFlowers();
@@ -71,6 +90,14 @@ public class FlowerController {
         return new ResponseEntity<>(collectionModel, HttpStatus.OK);
     }
 
+    @Operation(summary = "Change availability of a flower")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Flower availability changed",
+                    content = {@Content(mediaType = "application/json",
+                            schema = @Schema(implementation = Flower.class))}),
+            @ApiResponse(responseCode = "404", description = "Flower not found",
+                    content = @Content)
+    })
     @PutMapping("/{flowerId}/availability")
     @CircuitBreaker(name = "changeAvailabilityCircuitBreaker", fallbackMethod = "changeAvailabilityFallback")
     public ResponseEntity<EntityModel<Flower>> changeAvailability(@PathVariable UUID flowerId) {

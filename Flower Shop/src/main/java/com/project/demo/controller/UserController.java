@@ -3,6 +3,11 @@ package com.project.demo.controller;
 import com.project.demo.dto.LoginRequestDTO;
 import com.project.demo.model.User;
 import com.project.demo.service.UserService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.hateoas.Link;
@@ -74,6 +79,14 @@ public class UserController {
         }
     }
 
+    @Operation(summary = "delete user by id")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "user deleted",
+                    content = {@Content(mediaType = "application/json",
+                            schema = @Schema(implementation = User.class))}),
+            @ApiResponse(responseCode = "400", description = "Invalid id",
+                    content = @Content), @ApiResponse(responseCode = "404",
+            description = "user not found", content = @Content)})
     @DeleteMapping("/{userId}")
     public ResponseEntity<Void> deleteUser(@PathVariable UUID userId) {
         userService.deleteUser(userId);
