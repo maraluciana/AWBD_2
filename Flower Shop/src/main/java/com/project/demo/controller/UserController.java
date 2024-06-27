@@ -1,6 +1,8 @@
 package com.project.demo.controller;
 
 import com.project.demo.dto.LoginRequestDTO;
+import com.project.demo.exceptions.InvalidUserException;
+import com.project.demo.exceptions.UserNotFoundException;
 import com.project.demo.model.User;
 import com.project.demo.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -12,7 +14,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.hateoas.Link;
 import org.springframework.hateoas.server.mvc.WebMvcLinkBuilder;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -32,9 +33,8 @@ public class UserController {
 
     @PostMapping("/register")
     public ResponseEntity<EntityModel<User>> registerUser(@RequestBody User user) {
-        User registeredUser = userService.register(user);
-
-        if (registeredUser != null) {
+        try {
+            User registeredUser = userService.register(user);
             EntityModel<User> resource = EntityModel.of(registeredUser);
 
             Link selfLink = WebMvcLinkBuilder.linkTo(WebMvcLinkBuilder.methodOn(UserController.class).registerUser(user)).withSelfRel();
@@ -43,8 +43,8 @@ public class UserController {
             resource.add(WebMvcLinkBuilder.linkTo(WebMvcLinkBuilder.methodOn(UserController.class).loginUser(new LoginRequestDTO())).withRel("login"));
 
             return ResponseEntity.ok(resource);
-        } else {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+        } catch (Exception e) {
+            throw new InvalidUserException("Registration failed: " + e.getMessage());
         }
     }
 
@@ -64,7 +64,7 @@ public class UserController {
 
             return ResponseEntity.ok(resource);
         } else {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+            throw new UserNotFoundException(email);
         }
     }
 
@@ -89,8 +89,11 @@ public class UserController {
             description = "user not found", content = @Content)})
     @DeleteMapping("/{userId}")
     public ResponseEntity<Void> deleteUser(@PathVariable UUID userId) {
-        userService.deleteUser(userId);
-        return ResponseEntity.noContent().build();
+        try {
+            userService.deleteUser(userId);
+            return ResponseEntity.noContent().build();
+        } catch (Exception e) {
+            throw new UserNotFoundException(userId.toString());
+        }
     }
 }
-
