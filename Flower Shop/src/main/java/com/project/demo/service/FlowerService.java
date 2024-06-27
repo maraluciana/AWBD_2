@@ -44,6 +44,10 @@ public class FlowerService {
         return flowerRepository.findAll();
     }
 
+    public List<Flower> getByCategory(String name) {
+        return flowerRepository.findByCategoryName(name);
+    }
+
     public Flower changeAvailability(UUID flowerId) {
         Optional<Flower> optionalFlower = flowerRepository.findById(flowerId);
 

@@ -1,11 +1,14 @@
 package com.project.demo.controller;
 
+import com.project.demo.config.DiscountServiceProxy;
 import com.project.demo.dto.FlowerRequestDTO;
+import com.project.demo.model.Discount;
 import com.project.demo.model.Flower;
 import com.project.demo.service.FlowerService;
 import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.hateoas.CollectionModel;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -31,9 +34,23 @@ import org.springframework.http.HttpStatus;
 public class FlowerController {
 
     private FlowerService flowerService;
+    @Autowired
+    DiscountServiceProxy discountServiceProxy;
 
-    public FlowerController(FlowerService flowerService) {
+    public FlowerController(FlowerService flowerService, DiscountServiceProxy discountServiceProxy) {
         this.flowerService = flowerService;
+        this.discountServiceProxy = discountServiceProxy;
+    }
+
+    @GetMapping("/byCategory")
+    public ResponseEntity<List<Flower>> getByCategory(@RequestParam String category) {
+        List<Flower> flowers = this.flowerService.getByCategory((category));
+        Discount discount = discountServiceProxy.findDiscount();
+        flowers.forEach(flower -> {
+            flower.setPrice(flower.getPrice() - (flower.getPrice()*discount.getMonth())/100);
+        });
+
+        return new ResponseEntity<>(flowers, HttpStatus.OK);
     }
 
     @Operation(summary = "Add a new flower")
@@ -125,4 +142,6 @@ public class FlowerController {
         EntityModel<String> errorModel = EntityModel.of(errorMessage);
         return new ResponseEntity<>(errorModel, HttpStatus.SERVICE_UNAVAILABLE);
     }
+
+
 }
