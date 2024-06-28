@@ -56,7 +56,7 @@ public class CartService {
                     cart.addCartItem(cartItem);
 
                     // Recalculate total price based on the newly added CartItem
-                    int newTotalPrice = calculateTotalPrice(cart);
+                    var newTotalPrice = calculateTotalPrice(cart);
                     cart.setTotalPrice(newTotalPrice);
 
                     return cartRepository.save(cart);
@@ -69,9 +69,9 @@ public class CartService {
         }).orElse(null);
     }
 
-    private int calculateTotalPrice(Cart cart) {
+    private double calculateTotalPrice(Cart cart) {
         return cart.getCartItems().stream()
-                .mapToInt(item -> item.getFlower().getPrice() * item.getQuantity())
+                .mapToDouble(item -> item.getFlower().getPrice() * item.getQuantity())
                 .sum();
     }
 

@@ -47,7 +47,9 @@ public class FlowerController {
         List<Flower> flowers = this.flowerService.getByCategory((category));
         Discount discount = discountServiceProxy.findDiscount();
         flowers.forEach(flower -> {
-            flower.setPrice(flower.getPrice() - (flower.getPrice()*discount.getMonth())/100);
+            var x = flower.getPrice();
+            var newPrice = x  - (x*discount.getMonth())/100;
+            flower.setPrice(newPrice);
         });
 
         return new ResponseEntity<>(flowers, HttpStatus.OK);

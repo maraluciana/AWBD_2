@@ -9,6 +9,6 @@ import lombok.Setter;
 @Getter
 @AllArgsConstructor
 public class Discount {
-    private int month;
-    private int year;
+    private double month;
+    private double year;
 }

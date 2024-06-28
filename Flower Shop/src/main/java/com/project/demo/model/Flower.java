@@ -19,7 +19,7 @@ public class Flower {
     private String description;
 
     @Column(nullable = false)
-    private int price;
+    private double price;
 
     @Column(nullable = false)
     private String imageUrl;
@@ -71,11 +71,11 @@ public class Flower {
         this.description = description;
     }
 
-    public int getPrice() {
+    public double getPrice() {
         return price;
     }
 
-    public void setPrice(int price) {
+    public void setPrice(double price) {
         this.price = price;
     }
 

@@ -29,7 +29,7 @@ public class Cart {
     private List<CartItem> cartItems;
 
     @Column(name = "total_price", nullable = false)
-    private int totalPrice;
+    private double totalPrice;
 
     @Column(name = "is_cart_open", nullable = false)
     private boolean isCartOpen;
@@ -100,11 +100,11 @@ public class Cart {
         this.cartItems = cartItems;
     }
 
-    public int getTotalPrice() {
+    public double getTotalPrice() {
         return totalPrice;
     }
 
-    public void setTotalPrice(int totalPrice) {
+    public void setTotalPrice(double totalPrice) {
         this.totalPrice = totalPrice;
     }
 
