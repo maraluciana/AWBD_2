@@ -4,6 +4,7 @@ import com.project.demo.dto.FlowerRequestDTO;
 import com.project.demo.model.Flower;
 import com.project.demo.service.FlowerService;
 import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
+import io.swagger.v3.oas.annotations.media.ExampleObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.hateoas.CollectionModel;
@@ -40,7 +41,11 @@ public class FlowerController {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "201", description = "Flower added successfully",
                     content = {@Content(mediaType = "application/json",
-                            schema = @Schema(implementation = Flower.class))}),
+                            schema = @Schema(implementation = Flower.class),
+                            examples = @ExampleObject(
+                                    value = "{ \"id\": 1, \"name\": \"Rose\", \"description\": \"A beautiful red rose\", \"price\": 1999, \"imageUrl\": \"http://example.com/images/rose.jpg\", \"available\": true, \"categoryId\": \"3fa85f64-5717-4562-b3fc-2c963f66afa6\" }"
+                            )
+                    )}),
             @ApiResponse(responseCode = "400", description = "Invalid input",
                     content = @Content)
     })
